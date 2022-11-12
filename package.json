@@ -1,0 +1,24 @@
+{
+  "name": "zk101",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "genKeyPhase1": "bash ./scripts/generate_keys_phase1.sh",
+    "genKeyPhase2": "bash ./scripts/generate_keys_phase2.sh",
+    "genProof": "bash ./scripts/generate_proof.sh",
+    "verifyProof": "bash ./scripts/verify_proof.sh",
+    "compile": "bash ./scripts/compile_circuit.sh",
+    "genContract": "bash ./scripts/generate_contract.sh",
+    "genCalldata": "bash ./scripts/generate_calldata.sh",
+    "all": "yarn compile && yarn genKeyPhase1 && yarn genKeyPhase2 pot_final.ptau && yarn genProof && yarn verifyProof"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "circomlib": "^2.0.5",
+    "snarkjs": "0.4.22"
+  }
+}

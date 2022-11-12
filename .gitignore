@@ -1,0 +1,13 @@
+node_modules/
+circuit_js/
+circuit_final.zkey
+circuit.r1cs
+circuit.sym
+input.json
+offlineaadhaar*.xml
+pot_final.ptau
+notes/
+*.zip
+verification_key.json
+proof.json
+public.json
