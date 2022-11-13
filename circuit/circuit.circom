@@ -4,6 +4,7 @@ pragma circom 2.0.0;
 include "./base64decoder.circom";
 include "../helper-circuits/fp.circom";
 include "../helper-circuits/rsa.circom";
+include "../node_modules/circomlib/circuits/sha256/sha256.circom";
 
 
 template Base64Test() {
@@ -76,6 +77,20 @@ template FpPow65537ModTest() {
         log("out", i, pow.out[i]);
     }
 }
+
+template MySha256Test() {
+
+    signal input input_bits[98];
+    component hash = Sha256(98);
+
+    for(var i=0; i<98; i++) {
+        hash.in[i] <== input_bits[i];
+    }
+
+    for(var i=0; i<256; i++) {
+        log(hash.out[i]);
+    }
+}
 // Note: something is wrong with how we are converting hexes to ints
 // Maybe they are not in the right order.
-component main = MyRSAVerify65537Test();
+component main = MySha256Test();
