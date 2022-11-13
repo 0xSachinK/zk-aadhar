@@ -23,16 +23,16 @@ template FpPow65537Mod(n, k) {
             doublers[i].p[j] <== modulus[j];
         }
     }
-    for (var j = 0; j < k; j++) {
-        log(doublers[0].p[j]);
-    }
+    // for (var j = 0; j < k; j++) {
+    //     log(doublers[0].p[j]);
+    // }
     for (var j = 0; j < k; j++) {
         doublers[0].a[j] <== base[j];
         doublers[0].b[j] <== base[j];
     }
-    for (var j = 0; j < k; j++) {
-        log(doublers[0].out[j]);
-    }
+    // for (var j = 0; j < k; j++) {
+    //     log(doublers[0].out[j]);
+    // }
     for (var i = 0; i + 1 < 16; i++) {
         for (var j = 0; j < k; j++) {
             doublers[i + 1].a[j] <== doublers[i].out[j];

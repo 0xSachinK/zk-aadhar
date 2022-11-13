@@ -11,3 +11,4 @@ notes/
 verification_key.json
 proof.json
 public.json
+.DS_Store

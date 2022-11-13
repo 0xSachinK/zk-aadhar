@@ -170,7 +170,6 @@ def decodeBase64(_in):
     
     bits = []
     for dec in decoded_base64:
-        print(dec)
         _bits = num2Bits(dec, 6)
         print(_bits)
         reversed_bits = _bits[::-1]
