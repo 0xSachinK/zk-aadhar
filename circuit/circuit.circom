@@ -50,12 +50,12 @@ template MyRSAVerify65537(n, k) {
 }
 
 template MyRSAVerify65537Test() {
-    signal input signature[32];
-    signal input modulus[32];
-    signal input padded_message[32];
+    signal input signature[41];
+    signal input modulus[41];
+    signal input padded_message[41];
 
-    component verify = MyRSAVerify65537(16, 32);
-    for (var i = 0; i < 32; i++) {
+    component verify = MyRSAVerify65537(50, 41);
+    for (var i = 0; i < 41; i++) {
         verify.signature[i] <== signature[i];
         verify.modulus[i] <== modulus[i];
         verify.padded_message[i] <== padded_message[i];
@@ -66,7 +66,7 @@ template MyRSAVerify65537Test() {
 template FpPow65537ModTest() {
     signal input base[32];
     signal input modulus[32];
-    
+
     component pow = FpPow65537Mod(16, 32);
     for(var i=0; i<32; i++) {
         pow.base[i] <== base[i];
@@ -91,6 +91,5 @@ template MySha256Test() {
         log(hash.out[i]);
     }
 }
-// Note: something is wrong with how we are converting hexes to ints
-// Maybe they are not in the right order.
-component main = MySha256Test();
+
+component main = MyRSAVerify65537Test();

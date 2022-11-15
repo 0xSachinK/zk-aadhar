@@ -1,0 +1,41 @@
+from splitToArray import split_to_arary
+import json
+
+n = 50
+k = 41
+
+
+
+
+modulus_hex_str = 'bc8dc4058748bbb8cb0c089e933a9e2c388972c0b4a88082b234c7c16de74c1fb8ca832b807c85c1a7e2cdd03bdad511779c0af967da410c42c23b72a33d6859a8a875e3434e4e3aaa720e33eec1b07542a25a5ae1e96a18c31354a4a48c62a515c9d739d1873a2de25ec84cb62e43e3eb3b97d23b55c0026fa76284a3bea5785c5b0844581d3efdfcbcbb994ba165bd210b0e3a003345f7c45df018fbf4998bcc5068fdab2f7e2aed80c462ac7a899de5ab1514ccc8219a742cda1a86a00bd0bac57ba09e7f8f830a7939bc552797b96449ce27159e7d73a5f8707ddc6f63726afea22a6f1365a971371e9a5102dfcde086279d064133ef77e5e549e6eda2e1'
+modulus_int = int(modulus_hex_str, 16)
+modulus_array = split_to_arary(modulus_int, n=n, k=k)      # 64 * 8 = 512 bit
+
+padded_hash_hex_str = '0001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff003021300906052b0e03021a050004148c723a0fa70b111017b4a6f06afe1c0dbcec14e3'
+padded_hash_int = int(padded_hash_hex_str, 16)
+padded_hash_array = split_to_arary(padded_hash_int, n=n, k=k)
+
+
+
+signature_hex_str = '75cd467e91b9c6514cd0eb06fe2e00193c6aec32731c0f8d1a3f658a3b07ed753300a1c9f340ce0cf4a96974ef66ca61af09e50aeed5617df1e6545183ce6567c9fad088d8278e80d9f0f3a7884d5d9c4cee8d05b372d62e2b66d5fb5c25ee64832a73c1ff83ccff52a24e269e44e4f8958a9cc9a8af95d7691e2e9c285aae7f7b1172b34e2c3d25f7eb099236b9c267ad8db48aec66f6928902f5632e2e908e5bd38f9df22ec9a05e804ca73d6ba7e13fa37494ced3887bc1dfabff069c95da6cecbc2442592005fc369ab92686ee3f3d4ef094601d61ce02dd7fbb607d1059d84c2d46d7108695ca953ae5c355f1129fafd17950f5f5e91515563ae1d00ec2'
+signature_int = int(signature_hex_str, 16)
+signature_array = split_to_arary(signature_int, n=n, k=k)
+
+padded_hash_out_int = pow(signature_int, 65537, modulus_int)
+padded_hash_out_hex = hex(padded_hash_out_int)
+padded_hash_out_array = split_to_arary(padded_hash_out_int, n=n, k=k)
+print('Padded Hash Out Int', padded_hash_out_int)
+print('Padded Hash out hex', padded_hash_hex_str)
+print('Padded Hash array split', padded_hash_out_array)
+
+
+input_json_dict = {
+    'signature': signature_array,
+    'modulus': modulus_array,
+    'padded_message': padded_hash_array 
+}
+
+
+
+with open("../input.json", "w") as outfile:
+    outfile.write(json.dumps(input_json_dict))
