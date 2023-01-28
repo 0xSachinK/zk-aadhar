@@ -18,7 +18,7 @@ k = 41
 # I might find answers in windows machine.
 #############################
 
-input_file_path = '../offlineaadhaar20221115045024455.xml'
+input_file_path = '../../node_scripts/offlineaadhaar20220917094619777.xml'
 data = None
 with open(input_file_path, 'r') as f:
     data = f.read()
@@ -45,18 +45,22 @@ modulus_int_array = split_to_arary(modulus_int, n=n, k=k)
 signature_value_element = bs_data.find('SignatureValue')
 signature_value = signature_value_element.get_text()
 signature_decoded = base64.b64decode(signature_value)
+print(signature_decoded)
 signature_hex_encoded = [hex(b) for b in signature_decoded]
 signature_hex_str = convert_to_hex_string(signature_hex_encoded)
 print('Signature:', signature_hex_str, '\n')
 signature_int = int(signature_hex_str, 16)
+print('Signature int', signature_int)
 signature_int_array = split_to_arary(signature_int, n=n, k=k)
 
 # SHA1 of SHA256 UidData value
-signed_info_element = bs_data.find('SignedInfo')        # Return uncanonicalized element
+# Return uncanonicalized element
+signed_info_element = bs_data.find('SignedInfo')
 
 # Naive hacky canonicalization
 digest_value_element = bs_data.find('DigestValue')
 digest_value = digest_value_element.get_text()
+print('Digest value', digest_value)
 signed_info_element_canonicalized = f"""<SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>{digest_value}</DigestValue></Reference></SignedInfo>"""
 base_msg = hashlib.sha1(signed_info_element_canonicalized.encode()).hexdigest()
 print('Base Message:', base_msg, '\n')
@@ -69,23 +73,23 @@ padded_base_msg = pad_message(
 )
 padded_base_msg_int = int(padded_base_msg, 16)
 padded_base_msg_int_array = split_to_arary(padded_base_msg_int, n=n, k=k)
+print(padded_base_msg_int_array)
 
 input_json_dict = {
     'signature': signature_int_array,
     'modulus': modulus_int_array,
-    'padded_message': padded_base_msg_int_array 
+    'padded_message': padded_base_msg_int_array
 }
 
 with open("../input.json", "w") as outfile:
     outfile.write(json.dumps(input_json_dict))
 
 
-
 # with open('processedaadhar.xml', 'w') as f:
 #     f.write(obj_xml_str)
 
 # Parse digest value
-# Note: This is the sha256 of UidData and not the input 
+# Note: This is the sha256 of UidData and not the input
 # to the signature.
 
 # digest_val_decoded = base64.b64decode(digest_value)

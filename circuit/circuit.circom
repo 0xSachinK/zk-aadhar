@@ -1,22 +1,10 @@
+pragma circom 2.1.0;
 
-pragma circom 2.0.0;
-
-include "./base64decoder.circom";
-include "../helper-circuits/fp.circom";
-include "../helper-circuits/rsa.circom";
 include "../node_modules/circomlib/circuits/sha256/sha256.circom";
 
-
-template Base64Test() {
-    signal input x;
-    signal output y;
-    
-    var _x = x;
-    var lookup_val = base64LookUpTable(_x);
-
-    y <-- lookup_val;
-    y === 63;
-}
+include "../helper-circuits/fp.circom";
+include "../helper-circuits/rsa.circom";
+include "./public_key.circom";
 
 template MyRSAVerify65537(n, k) {
     signal input signature[k];
@@ -40,19 +28,18 @@ template MyRSAVerify65537(n, k) {
         bigPow.modulus[i] <== modulus[i];
     }
 
-    log("out");
-    for (var i=0; i < k; i++) {
-        log(bigPow.out[i], ",");
-    }
     for (var i = 0; i < k; i++) {
         bigPow.out[i] === padded_message[i];
     }
 }
 
-template MyRSAVerify65537Test() {
+
+template AadhaarVerification() {
     signal input signature[41];
-    signal input modulus[41];
     signal input padded_message[41];
+    signal output hash_message[256];
+
+    var modulus[41] = UIDAI_Paperless_Offline_eKYC_Public_Key();
 
     component verify = MyRSAVerify65537(50, 41);
     for (var i = 0; i < 41; i++) {
@@ -60,36 +47,24 @@ template MyRSAVerify65537Test() {
         verify.modulus[i] <== modulus[i];
         verify.padded_message[i] <== padded_message[i];
     }
+
+    // Not a good nullfier. Keeping it for future reference.
+    // Hash the base_message
+    // var padded_message_sum = 0;
+    // for(var i=0; i<41; i++) {
+    //     padded_message_sum += padded_message[i];
+    // }
+    // component padded_message_bits = Num2Bits(64);
+    // padded_message_bits.in <== padded_message_sum;
+    
+    // component hash = Sha256(64);
+    // for(var i=0; i<64; i++) {
+    //     hash.in[i] <== padded_message_bits.out[i];
+    // }
+    // for(var i=0; i<256; i++) {
+    //     hash_message[i] <== hash.out[i];
+    // }
 }
 
+component main = AadhaarVerification();
 
-template FpPow65537ModTest() {
-    signal input base[32];
-    signal input modulus[32];
-
-    component pow = FpPow65537Mod(16, 32);
-    for(var i=0; i<32; i++) {
-        pow.base[i] <== base[i];
-        pow.modulus[i] <== modulus[i];
-    }
-
-    for(var i=0; i<32; i++) {
-        log("out", i, pow.out[i]);
-    }
-}
-
-template MySha256Test() {
-
-    signal input input_bits[98];
-    component hash = Sha256(98);
-
-    for(var i=0; i<98; i++) {
-        hash.in[i] <== input_bits[i];
-    }
-
-    for(var i=0; i<256; i++) {
-        log(hash.out[i]);
-    }
-}
-
-component main = MyRSAVerify65537Test();
