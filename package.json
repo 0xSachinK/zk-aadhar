@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "circomlib": "^2.0.5",
-    "snarkjs": "0.4.22"
+    "snarkjs": "0.4.22",
+    "xml2js": "^0.4.23"
   }
 }
