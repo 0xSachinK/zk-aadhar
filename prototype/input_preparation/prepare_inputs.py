@@ -1,3 +1,4 @@
+import struct  # for struct.pack
 import xml.dom.minidom
 import base64
 import json
@@ -95,27 +96,75 @@ canonicalized_xml = canonicalized_xml.replace('/><Pht', '></Poa><Pht')
 # Remove newlines
 canonicalized_xml = canonicalized_xml.replace('\n', '')
 
-print('Cananlicalized XML length:', len(canonicalized_xml))
 
+# Truncate to 256 bytes
+canonicalized_xml = canonicalized_xml[:32]
+print('Cananlicalized XML length:', len(canonicalized_xml))
 
 # Calculate SHA256 of canonicalized XML
 sha256 = hashlib.sha256(canonicalized_xml.encode()).hexdigest()
 print('SHA256 of canonicalized XML:', sha256, '\n')
 
-uid_data_bytes = []
-max_val = 0
-for c in canonicalized_xml:
-    if ord(c) > 127:
-        print('Non ASCII character:', c)
-    max_val = max(max_val, ord(c))
-    uid_data_bytes.append(ord(c))
 
-print('Max ASCII value:', max_val)
+# uid_data_bytes = []
+# max_val = 0
+# for c in canonicalized_xml:
+#     if ord(c) > 127:
+#         print('Non ASCII character:', c)
+#     max_val = max(max_val, ord(c))
+#     uid_data_bytes.append(ord(c))
+# print('Max ASCII value:', max_val)
 
+
+def sha256_padding(input_len):
+    """Calculate SHA256 padding for given input length."""
+    # https://tools.ietf.org/html/rfc6234#section-4.1
+    padding = bytearray()
+    # Append 0x80
+    padding.append(0x80)
+    # Append 0x00 until length is 56 mod 64
+    while (input_len + len(padding)) % 64 != 56:
+        padding.append(0x00)
+    # Append 64 bit big endian length
+    # big endian = most significant byte first
+    # >Q = unsigned long long and is 8 bytes (64 bits)
+    padding.extend(struct.pack('>Q', input_len * 8))
+    return padding
+
+
+# Calculate SHA256 padding
+sha256_padding = sha256_padding(len(canonicalized_xml))
+# print('SHA256 padding:', sha256_padding, '\n')
+
+# convert padding to binary string
+sha256_padding_bin = ''.join(format(x, '08b') for x in sha256_padding)
+print('SHA256 padding binary:', sha256_padding_bin, '\n')
+print('SHA256 padding binary length:', len(sha256_padding_bin), '\n')
+
+in_without_padding = [ord(c) for c in canonicalized_xml]
+
+# convert all decimals in in_with_padding to binary
+in_without_padding_binary_string = ''.join(
+    format(x, '08b') for x in in_without_padding)
+print('Input without padding binary:', in_without_padding_binary_string, '\n')
+print('Input without padding binary length:',
+      len(in_without_padding_binary_string), '\n')
+
+in_with_padding_binary_string = in_without_padding_binary_string + sha256_padding_bin
+print('Input with padding binary:', in_with_padding_binary_string, '\n')
+print('Input with padding binary length:',
+      len(in_with_padding_binary_string), '\n')
+
+in_padded = [b for b in in_with_padding_binary_string]
+in_padded.extend([0 for i in range(512)])
 
 input_json_dict = {
-    'uid_data_bytes': [ord(c) for c in canonicalized_xml]
+    'in_padded': in_padded,
+    'in_len_padded_bits': 512,
 }
 
 with open("../../input.json", "w") as outfile:
     outfile.write(json.dumps(input_json_dict))
+
+
+# 0100000000

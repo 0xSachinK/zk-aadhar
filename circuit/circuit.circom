@@ -1,9 +1,8 @@
 pragma circom 2.1.0;
 
-include "../node_modules/circomlib/circuits/sha256/sha256.circom";
-
 include "../helper-circuits/fp.circom";
 include "../helper-circuits/rsa.circom";
+include "../zk-email-verify-circuits/sha256general.circom";
 include "./public_key.circom";
 
 template MyRSAVerify65537(n, k) {
@@ -50,27 +49,40 @@ template AadhaarVerification() {
 }
 
 
+// template AadhaarSha256Verification(N) {
+//     signal input in_padded[N];
+//     signal input in_len_padded_bytes;
+//     signal output hash_message[256];
+
+//     component sha256 = Sha256Bytes(N);
+//     sha256.in_len_padded_bytes <== in_len_padded_bytes;
+//     for (var i = 0; i < N; i++) {
+//         sha256.in_padded[i] <== in_padded[i];
+//     }
+
+//     for (var i = 0; i < 256; i++) {
+//         hash_message[i] <== sha256.out[i];
+//     }
+// }
+
 template AadhaarSha256Verification(N) {
-    signal input uid_data_bytes[N];
+    signal input in_padded[N];
+    signal input in_len_padded_bits;
     signal output hash_message[256];
 
-    component bitifier[N];
+    component sha256 = Sha256General(N);
+    sha256.in_len_padded_bits <== in_len_padded_bits;
     for (var i = 0; i < N; i++) {
-        bitifier[i] = Num2Bits(8);
-        bitifier[i].in <== uid_data_bytes[i];
-    }
-
-    component hasher = Sha256(8 * N);
-    for (var i = 0; i < N; i++) {
-        for (var j = 0; j < 8; j++) {
-            hasher.in[i * 8 + j] <== bitifier[i].out[7 - j];
-        }
+        sha256.paddedIn[i] <== in_padded[i];
     }
 
     for (var i = 0; i < 256; i++) {
-        hash_message[i] <== hasher.out[i];
+        hash_message[i] <== sha256.out[i];
     }
 }
 
 
-component main = AadhaarSha256Verification(8379);
+// 10,000 chars (8,379 were present in my Aadhaar XML file)
+// 10,000 * 8 = 80,000 bits
+// 512 * 157 = 80,384 bits
+component main = AadhaarSha256Verification(1024);
