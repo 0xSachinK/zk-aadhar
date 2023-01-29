@@ -12,3 +12,5 @@ verification_key.json
 proof.json
 public.json
 .DS_Store
+node_scripts/*.xml
+experimentation_outputs/*

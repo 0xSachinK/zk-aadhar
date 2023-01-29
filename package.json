@@ -6,9 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "genKeyPhase1": "bash ./scripts/generate_keys_phase1.sh",
-    "genKeyPhase2": "bash ./scripts/generate_keys_phase2.sh",
-    "genProof": "bash ./scripts/generate_proof.sh",
-    "verifyProof": "bash ./scripts/verify_proof.sh",
+    "genKeyPhase2": "bash ./scripts/generate_keys_phase2_groth16.sh",
+    "genKeyPhase2:plonk": "bash ./scripts/generate_keys_phase2.sh",
+    "genProof": "bash ./scripts/generate_proof_groth16.sh",
+    "verifyProof": "bash ./scripts/verify_proof_groth16.sh",
     "compile": "bash ./scripts/compile_circuit.sh",
     "genContract": "bash ./scripts/generate_contract.sh",
     "genCalldata": "bash ./scripts/generate_calldata.sh",

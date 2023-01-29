@@ -37,7 +37,7 @@ template MyRSAVerify65537(n, k) {
 template AadhaarVerification() {
     signal input signature[41];
     signal input padded_message[41];
-    signal output hash_message[256];
+    signal input uid_data_bytes[1000];
 
     var modulus[41] = UIDAI_Paperless_Offline_eKYC_Public_Key();
 
@@ -47,24 +47,30 @@ template AadhaarVerification() {
         verify.modulus[i] <== modulus[i];
         verify.padded_message[i] <== padded_message[i];
     }
-
-    // Not a good nullfier. Keeping it for future reference.
-    // Hash the base_message
-    // var padded_message_sum = 0;
-    // for(var i=0; i<41; i++) {
-    //     padded_message_sum += padded_message[i];
-    // }
-    // component padded_message_bits = Num2Bits(64);
-    // padded_message_bits.in <== padded_message_sum;
-    
-    // component hash = Sha256(64);
-    // for(var i=0; i<64; i++) {
-    //     hash.in[i] <== padded_message_bits.out[i];
-    // }
-    // for(var i=0; i<256; i++) {
-    //     hash_message[i] <== hash.out[i];
-    // }
 }
 
-component main = AadhaarVerification();
 
+template AadhaarSha256Verification(N) {
+    signal input uid_data_bytes[N];
+    signal output hash_message[256];
+
+    component bitifier[N];
+    for (var i = 0; i < N; i++) {
+        bitifier[i] = Num2Bits(8);
+        bitifier[i].in <== uid_data_bytes[i];
+    }
+
+    component hasher = Sha256(8 * N);
+    for (var i = 0; i < N; i++) {
+        for (var j = 0; j < 8; j++) {
+            hasher.in[i * 8 + j] <== bitifier[i].out[7 - j];
+        }
+    }
+
+    for (var i = 0; i < 256; i++) {
+        hash_message[i] <== hasher.out[i];
+    }
+}
+
+
+component main = AadhaarSha256Verification(8379);
