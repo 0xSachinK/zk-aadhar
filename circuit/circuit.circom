@@ -81,8 +81,23 @@ template AadhaarSha256Verification(N) {
     }
 }
 
+// template AadhaarDigestValueVerification(N) {
+//     signal input canonicalized_signed_info[563];        // fixed value for all aadhaar XML files
+    
+//     var digest_value_start_index = 480;
+//     var digest_value_length = 44;
 
-// 10,000 chars (8,379 were present in my Aadhaar XML file)
-// 10,000 * 8 = 80,000 bits
-// 512 * 157 = 80,384 bits
-component main = AadhaarSha256Verification(1024);
+//     component base64_decoder = Base64Decode(N);
+
+//     signal input digest_value[digest_value_length];
+//     for (var i = digest_value_start_index; i < digest_value_start_index + digest_value_length; i++) {
+//         digest_value[i - digest_value_start_index] <== canonicalized_signed_info[i];
+//     }
+
+// }
+
+
+// 67,032 bits (8,379 chars) are present in my Aadhaar XML file
+// Add 10% to that and round up to the nearest multiple of 512
+// 73,536 bits (9,192 chars) is the number of max bits we should need.
+component main = AadhaarSha256Verification(74752);
