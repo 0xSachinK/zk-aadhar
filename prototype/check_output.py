@@ -1,7 +1,7 @@
 # read data from public.json
 import json
 data = None
-with open('../../public.json', 'r') as f:
+with open('../public.json', 'r') as f:
     data = json.loads(f.read())
 
 

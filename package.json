@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --max-old-space-size=4096 ./node_modules/.bin/mocha tests/test_*.js",
     "genKeyPhase1": "bash ./scripts/generate_keys_phase1.sh",
-    "genKeyPhase2": "bash ./scripts/generate_keys_phase2_groth16.sh",
+    "genKeyPhase2": "bash ./scripts/generate_keys_phase2_groth16_unsafe.sh",
+    "genKeyPhase2:groth:safe": "bash ./scripts/generate_keys_phase2_groth16.sh",
     "genKeyPhase2:plonk": "bash ./scripts/generate_keys_phase2.sh",
     "genProof": "bash ./scripts/generate_proof_groth16.sh",
     "verifyProof": "bash ./scripts/verify_proof_groth16.sh",
@@ -19,7 +20,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chai": "^4.3.7",
+    "circom_tester": "^0.0.19",
     "circomlib": "^2.0.5",
+    "mocha": "^10.2.0",
     "snarkjs": "0.4.22",
     "xml2js": "^0.4.23"
   }

@@ -13,7 +13,7 @@ n = 50
 k = 41
 
 
-input_file_path = '../../node_scripts/offlineaadhaar20220917094619777.xml'
+input_file_path = '../aadhaar_files/offlineaadhaar20220917094619777.xml'
 data = None
 with open(input_file_path, 'r') as f:
     data = f.read()
@@ -83,6 +83,8 @@ canonicalized_xml = canonicalized_xml\
     .replace('/><Pht', '></Poa><Pht')\
     .replace('\n', '')
 
+
+print(canonicalized_xml)
 # Calculate SHA256 of canonicalized XML
 sha256 = hashlib.sha256(canonicalized_xml.encode()).hexdigest()
 print('SHA256 of canonicalized XML:', sha256, '\n')
@@ -132,11 +134,11 @@ print('Input with padding binary length:',
 
 
 input_json_dict = {
-    'in_padded': in_with_padding_binary_string,
+    'in_padded': [b for b in in_with_padding_binary_string],
     'in_len_padded_bits': len(in_with_padding_binary_string),
 }
 
-with open("../../input.json", "w") as outfile:
+with open("../input.json", "w") as outfile:
     outfile.write(json.dumps(input_json_dict))
 
 

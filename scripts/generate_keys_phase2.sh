@@ -4,7 +4,7 @@
 
 # Setup (PLONK does not require a specific trusted cermony for each circuit); Create the verification key
 echo "Creating circuit specific keys"
-./node_modules/.bin/snarkjs plonk setup circuit.r1cs $1 circuit_final.zkeym --max-old-space-size=1400
+./node_modules/.bin/snarkjs plonk setup circuit.r1cs $1 circuit_final.zkey --max-old-space-size=1400
 
 # Export the verification key to JSON
 ./node_modules/.bin/snarkjs zkey export verificationkey circuit_final.zkey verification_key.json

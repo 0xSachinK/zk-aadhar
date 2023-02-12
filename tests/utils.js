@@ -4,55 +4,58 @@ const fs = require('fs');
 const xml2js = require('xml2js');
 const crypto = require('crypto');
 
-const parser = new xml2js.Parser();
-const xml = fs.readFileSync('./node_scripts/offlineaadhaar20220917094619777.xml', 'utf8');
 
 
 // split a bigint into k chunks of n bits each
 function split_to_array(_in, n, k) {
-    let _in_copy = _in;
-    let words = [];
-    for (let i = 0; i < k; i++) {
-        words[i] = _in % BigInt(2 ** n);
-        _in = _in / BigInt(2 ** n);
-    }
-    if (_in != 0) {
-        throw new Error(`Number ${_in_copy} does not fit in ${k * n} bits`);
-    }
-    return words;
+  let _in_copy = _in;
+  let words = [];
+  for (let i = 0; i < k; i++) {
+    words[i] = _in % BigInt(2 ** n);
+    _in = _in / BigInt(2 ** n);
+  }
+  if (_in != 0) {
+    throw new Error(`Number ${_in_copy} does not fit in ${k * n} bits`);
+  }
+  return words;
 }
 
 function pkcs1PadSHA1(hashValue, keySize) {
-    // Default padding scheme in openssl is PKCS1
-    const defaultPaddingScheme = "PKCS1";
-    //T: Identifier of signature scheme
-    const sha1Identifier = "3021300906052b0e03021a05000414";
-    var paddedHash = "";
-    // 00||01
-    paddedHash += "0001";
-    // PS
-    var psLen = keySize / 8 - (hashValue.length + sha1Identifier.length + 6) / 2;
-    var ps = "";
-    for (var i = 0; i < psLen; i++) {
-        ps += "ff";
-    }
-    paddedHash += ps;
-    // 00
-    paddedHash += "00";
-    // T
-    paddedHash += sha1Identifier;
-    // H
-    paddedHash += hashValue;
+  // Default padding scheme in openssl is PKCS1
+  const defaultPaddingScheme = "PKCS1";
+  //T: Identifier of signature scheme
+  const sha1Identifier = "3021300906052b0e03021a05000414";
+  var paddedHash = "";
+  // 00||01
+  paddedHash += "0001";
+  // PS
+  var psLen = keySize / 8 - (hashValue.length + sha1Identifier.length + 6) / 2;
+  var ps = "";
+  for (var i = 0; i < psLen; i++) {
+    ps += "ff";
+  }
+  paddedHash += ps;
+  // 00
+  paddedHash += "00";
+  // T
+  paddedHash += sha1Identifier;
+  // H
+  paddedHash += hashValue;
 
-    return paddedHash;
+  return paddedHash;
 }
 
 
+function prepareInputForRSAVerificationCircuit(xml) {
 
-parser.parseString(xml, function (err, result) {
+  const parser = new xml2js.Parser();
+  // const xml = fs.readFileSync('./node_scripts/offlineaadhaar20220917094619777.xml', 'utf8');
+
+
+  parser.parseString(xml, function (err, result) {
     const signatureValue = result['OfflinePaperlessKyc']['Signature'][0]['SignatureValue'][0];
+
     // decode base64 signatureValue
-    
     const signatureValueDecoded = Buffer.from(signatureValue, 'base64').toString('hex');
     console.log('SignatureValue: ', signatureValueDecoded);
 
@@ -91,9 +94,9 @@ parser.parseString(xml, function (err, result) {
 
     // create a json file called input.json and write signatureValueBigIntArray and paddedSha1DigestBigIntArray to it
     const input = {
-        signature: signatureValueBigIntArray.map(x => x.toString()),
-        padded_message: paddedSha1DigestBigIntArray.map(x => x.toString())
+      signature: signatureValueBigIntArray.map(x => x.toString()),
+      padded_message: paddedSha1DigestBigIntArray.map(x => x.toString())
     }
     fs.writeFileSync('./input.json', JSON.stringify(input));
-});
-
+  });
+}
