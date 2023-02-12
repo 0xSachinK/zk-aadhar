@@ -5,6 +5,7 @@ include "../helper-circuits/rsa.circom";
 include "../zk-email-verify-circuits/sha256general.circom";
 include "../node_modules/circomlib/circuits/sha256/sha256.circom";
 include "./public_key.circom";
+include "../zk-email-verify-circuits/base64.circom";
 
 // RSA VERIFICATION CIRCUIT
 // template MyRSAVerify65537(n, k) {
@@ -75,20 +76,46 @@ include "./public_key.circom";
 // }
 
 // Sha256General Verification Circuit
-template AadhaarSha256Verification(N) {
-    signal input in_padded[N];
-    signal input in_len_padded_bits;
-    signal output hash_message[256];
+// template AadhaarSha256Verification(N) {
+//     signal input in_padded[N];
+//     signal input in_len_padded_bits;
+//     signal output hash_message[256];
 
-    component sha256 = Sha256General(N);
-    sha256.in_len_padded_bits <== in_len_padded_bits;
-    for (var i = 0; i < N; i++) {
-        sha256.paddedIn[i] <== in_padded[i];
+//     component sha256 = Sha256General(N);
+//     sha256.in_len_padded_bits <== in_len_padded_bits;
+//     for (var i = 0; i < N; i++) {
+//         sha256.paddedIn[i] <== in_padded[i];
+//     }
+
+//     for (var i = 0; i < 256; i++) {
+//         hash_message[i] <== sha256.out[i];
+//     }
+// }
+
+
+template MyBase64Decoder() {
+
+    // in = 44 chars or 44 * 6 = 264 bits
+    // out = 264 / 8 = 33 bytes
+
+    signal input in[44];
+    signal output out[33];
+
+    component decoder = Base64Decode(33);
+
+    for (var i = 0; i < 44; i++) {
+        decoder.in[i] <== in[i];
     }
 
-    for (var i = 0; i < 256; i++) {
-        hash_message[i] <== sha256.out[i];
+    for (var i = 0; i < 33; i++) {
+        out[i] <== decoder.out[i];
     }
+
+    for (var i = 0; i < 33; i++) {
+        log(out[i]);
+    }
+
+    // output matches the output of the python script
 }
 
 // template AadhaarDigestValueVerification(N) {
@@ -111,4 +138,4 @@ template AadhaarSha256Verification(N) {
 // Add 10% to that and round up to the nearest multiple of 512
 // 73,728 bits (~9k chars) is the number of max bits we should need.
 
-component main = AadhaarSha256Verification(5120);
+component main = MyBase64Decoder();
