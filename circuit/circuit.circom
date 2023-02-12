@@ -1,11 +1,12 @@
 pragma circom 2.1.0;
 
-include "../helper-circuits/fp.circom";
-include "../helper-circuits/rsa.circom";
-include "../zk-email-verify-circuits/sha256general.circom";
-include "../node_modules/circomlib/circuits/sha256/sha256.circom";
-include "./public_key.circom";
-include "../zk-email-verify-circuits/base64.circom";
+// include "../helper-circuits/fp.circom";
+// include "../helper-circuits/rsa.circom";
+// include "../zk-email-verify-circuits/sha256general.circom";
+// include "../node_modules/circomlib/circuits/sha256/sha256.circom";
+// include "./public_key.circom";
+// include "../zk-email-verify-circuits/base64.circom";
+include "../sha1-circuits/sha1.circom";
 
 // RSA VERIFICATION CIRCUIT
 // template MyRSAVerify65537(n, k) {
@@ -93,29 +94,61 @@ include "../zk-email-verify-circuits/base64.circom";
 // }
 
 
-template MyBase64Decoder() {
+// template MyBase64Decoder() {
 
-    // in = 44 chars or 44 * 6 = 264 bits
-    // out = 264 / 8 = 33 bytes
+//     // in = 44 chars or 44 * 6 = 264 bits
+//     // out = 264 / 8 = 33 bytes
 
-    signal input in[44];
-    signal output out[33];
+//     signal input in[44];
+//     signal output out[33];
 
-    component decoder = Base64Decode(33);
+//     component decoder = Base64Decode(33);
 
-    for (var i = 0; i < 44; i++) {
-        decoder.in[i] <== in[i];
+//     for (var i = 0; i < 44; i++) {
+//         decoder.in[i] <== in[i];
+//     }
+
+//     // Last bit is 0, so could just do the 32 bytes
+//     for (var i = 0; i < 33; i++) {
+//         out[i] <== decoder.out[i];
+//     }
+
+//     for (var i = 0; i < 33; i++) {
+//         log(out[i]);
+//     }
+
+//     // output matches the output of the python script
+// }
+
+template MySha1(N) {
+
+
+    signal input in_bytes[N];
+    signal output hash_message[160];
+
+    component bitifier[N];
+    for (var i = 0; i < N; i++) {
+        bitifier[i] = Num2Bits(8);
+        bitifier[i].in <== in_bytes[i];
     }
 
-    for (var i = 0; i < 33; i++) {
-        out[i] <== decoder.out[i];
+    component hasher = Sha1(8 * N);
+    for (var i = 0; i < N; i++) {
+        for (var j = 0; j < 8; j++) {
+            hasher.in[i * 8 + j] <== bitifier[i].out[7 - j];
+        }
     }
 
-    for (var i = 0; i < 33; i++) {
-        log(out[i]);
+    for (var i = 0; i < 160; i++) {
+        hash_message[i] <== hasher.out[i];
     }
 
-    // output matches the output of the python script
+    // Need to modify the out slightly to get the actual sha1 value.
+    // out = []
+    // for i in range(5):
+    //    out += hash_message[i * 32 : (i + 1) * 32][::-1]
+    // print(hex(int(''.join(out), 2)))
+
 }
 
 // template AadhaarDigestValueVerification(N) {
@@ -138,4 +171,4 @@ template MyBase64Decoder() {
 // Add 10% to that and round up to the nearest multiple of 512
 // 73,728 bits (~9k chars) is the number of max bits we should need.
 
-component main = MyBase64Decoder();
+component main = MySha1(563);

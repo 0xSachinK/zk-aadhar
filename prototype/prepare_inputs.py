@@ -54,20 +54,22 @@ digest_value = digest_value_element.get_text()
 signed_info_element_canonicalized = f"""<SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>{digest_value}</DigestValue></Reference></SignedInfo>"""
 
 # Create padded base message
-# base_msg = hashlib.sha1(signed_info_element_canonicalized.encode()).hexdigest()
-# padded_base_msg = pad_message(
-#     base_msg,
-#     'sha1',
-#     2048
-# )
-# padded_base_msg_int = int(padded_base_msg, 16)
-# padded_base_msg_int_array = split_to_arary(padded_base_msg_int, n=n, k=k)
+base_msg = hashlib.sha1(signed_info_element_canonicalized.encode()).hexdigest()
+print("Base message:", base_msg, "\n")
+padded_base_msg = pad_message(
+    base_msg,
+    'sha1',
+    2048
+)
+padded_base_msg_int = int(padded_base_msg, 16)
+padded_base_msg_int_array = split_to_arary(padded_base_msg_int, n=n, k=k)
+print(padded_base_msg_int_array)
 
 # Prpare digest value decoded
-# digest_val_decoded = base64.b64decode(digest_value)
-# digest_val_hex_encoded = [hex(b) for b in digest_val_decoded]
-# digest_val_hex_str = convert_to_hex_string(digest_val_hex_encoded)
-# print('Digest Value:', digest_val_hex_str, '\n')
+digest_val_decoded = base64.b64decode(digest_value)
+digest_val_hex_encoded = [hex(b) for b in digest_val_decoded]
+digest_val_hex_str = convert_to_hex_string(digest_val_hex_encoded)
+print('Digest Value:', digest_val_hex_str, '\n')
 
 
 # Remove Signature element from XML
@@ -84,7 +86,7 @@ canonicalized_xml = canonicalized_xml\
     .replace('\n', '')
 
 
-print(canonicalized_xml)
+# print(canonicalized_xml)
 # Calculate SHA256 of canonicalized XML
 sha256 = hashlib.sha256(canonicalized_xml.encode()).hexdigest()
 print('SHA256 of canonicalized XML:', sha256, '\n')
@@ -133,9 +135,17 @@ print('Input with padding binary length:',
       len(in_with_padding_binary_string), '\n')
 
 
+# Sha256 verification inputs
+# input_json_dict = {
+#     'in_padded': [b for b in in_with_padding_binary_string],
+#     'in_len_padded_bits': len(in_with_padding_binary_string),
+# }
+
+print("Num chars", len(signed_info_element_canonicalized))
+
+# Sha1 Verificaiton inputs
 input_json_dict = {
-    'in_padded': [b for b in in_with_padding_binary_string],
-    'in_len_padded_bits': len(in_with_padding_binary_string),
+    "in_bytes": [str(ord(b)) for b in signed_info_element_canonicalized]
 }
 
 with open("../input.json", "w") as outfile:
