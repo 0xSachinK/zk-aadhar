@@ -71,6 +71,28 @@ asn1_bytes = {
 
 def pad_message(base_message, signature_scheme, output_len):
     asn1_byte_str = asn1_bytes[signature_scheme]
+
+    # convert asn1_byte_str to int
+
+    # bin_str = ''
+    # for i in range(15):
+    #     val = asn1_byte_str[i*2:i*2+2]
+    #     print(val, end=' ')
+    #     int_val = int(val, 16)
+    #     print(int_val, end=' ')
+    #     bin_val = bin(int_val)[2:]
+    #     print(bin_val, end=' ')
+    #     bin_val = '0' * (8 - len(bin_val)) + bin_val
+    #     bin_str += bin_val
+
+    # print(bin_str)
+
+    # asn1_byte_str_2 = int(asn1_byte_str, 16)
+    # # convert asn1_byte_str to binary string
+    # asn1_byte_str_2 = bin(asn1_byte_str_2)[2:]
+    # print(asn1_byte_str_2)
+    # print([int(b) for b in asn1_byte_str_2])
+
     ff_octet_str_length = output_len // 8 - (
         len(asn1_byte_str)
         + len(base_message)
@@ -84,3 +106,4 @@ def pad_message(base_message, signature_scheme, output_len):
 # base_message = '8c723a0fa70b111017b4a6f06afe1c0dbcec14e3'
 # padded_base_message = pad_message(base_message, 'sha1', 2048)
 # print(padded_base_message)
+# 3cdfa53ed90b52ac190c924a25ea4ff2419397eb

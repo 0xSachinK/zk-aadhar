@@ -51,7 +51,17 @@ signed_info_element = bs_data.find('SignedInfo')
 # Naive hacky canonicalization
 digest_value_element = bs_data.find('DigestValue')
 digest_value = digest_value_element.get_text()
+
+digest_value_zeroes = [0 for _ in digest_value]
 signed_info_element_canonicalized = f"""<SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>{digest_value}</DigestValue></Reference></SignedInfo>"""
+
+signed_info_element_part_1 = """<SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>"""
+signed_info_element_part_2 = """</DigestValue></Reference></SignedInfo>"""
+print('\n')
+print([ord(c) for c in signed_info_element_part_1])
+print(digest_value_zeroes)
+print([ord(c) for c in signed_info_element_part_2])
+print('\n')
 
 # Create padded base message
 base_msg = hashlib.sha1(signed_info_element_canonicalized.encode()).hexdigest()
@@ -61,9 +71,10 @@ padded_base_msg = pad_message(
     'sha1',
     2048
 )
+print(padded_base_msg)
 padded_base_msg_int = int(padded_base_msg, 16)
 padded_base_msg_int_array = split_to_arary(padded_base_msg_int, n=n, k=k)
-print(padded_base_msg_int_array)
+print("padded base message int array", padded_base_msg_int_array)
 
 # Prpare digest value decoded
 digest_val_decoded = base64.b64decode(digest_value)
@@ -143,13 +154,18 @@ print('Input with padding binary length:',
 
 print("Num chars", len(signed_info_element_canonicalized))
 
+
+in_bits = [d for d in bin(int(base_msg, 16))[2:]]
+print("Num bits", len(in_bits))
+# append 0s to the beginning of in_bits until it is 160 bits long
+in_bits = ['0'] * (160 - len(in_bits)) + in_bits
+
 # Sha1 Verificaiton inputs
 input_json_dict = {
-    "in_bytes": [str(ord(b)) for b in signed_info_element_canonicalized]
+    "in_bits": in_bits,
+    "x": 2,
+    "y": 3
 }
 
 with open("../input.json", "w") as outfile:
     outfile.write(json.dumps(input_json_dict))
-
-
-# 0100000000

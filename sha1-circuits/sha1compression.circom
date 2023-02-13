@@ -30,7 +30,7 @@ template Sha1compression() {
     for (i=0; i<=79; i++) rotl_30[i] = RotL(32, 30);
 
     component K_t[80];
-    for (i=0; i<=79; i++) K_t[i] = K(i);
+    for (i=0; i<=79; i++) K_t[i] = K_Sha1(i);
 
     component t_tmp[80];
     for (i=0; i<=79; i++) t_tmp[i] = T(i);

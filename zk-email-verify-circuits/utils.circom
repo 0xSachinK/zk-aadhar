@@ -3,8 +3,8 @@ pragma circom 2.0.3;
 include "../node_modules/circomlib/circuits/bitify.circom";
 include "../node_modules/circomlib/circuits/comparators.circom";
 include "../node_modules/circomlib/circuits/sign.circom";
-include "../helper-circuits/bigint_func.circom";
-include "../helper-circuits/fp.circom";
+include "./bigint_func.circom";
+include "./fp.circom";
 
 // returns ceil(log2(a+1))
 function log2_ceil(a) {

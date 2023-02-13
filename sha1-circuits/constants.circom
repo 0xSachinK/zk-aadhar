@@ -2,7 +2,7 @@ pragma circom 2.1.0;
 
 include "../node_modules/circomlib/circuits/bitify.circom";
 
-template H(x) {
+template H_Sha1(x) {
 
     signal output out[32];
     var c[5] = [
@@ -22,7 +22,7 @@ template H(x) {
 
 }
 
-template K(t) {
+template K_Sha1(t) {
     signal output out[32];
     var k[4] = [0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6];
 
