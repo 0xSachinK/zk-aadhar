@@ -250,7 +250,8 @@ template Aadhaar(N) {
 }
 
 // 67,032 bits (8,379 chars) are present in my Aadhaar XML file
-// Add 10% to that and round up to the nearest multiple of 512
-// 73,728 bits (~9k chars) is the number of max bits we should need.
+// Add 3% to that and round up to the nearest multiple of 512
+// 69,632 bits (~9k chars) is the number of max bits we should need. 
+// (Yeah, I chose 3% to make it a nice number with 69 in it.)
 
-component main = Aadhaar(512);
+component main = Aadhaar(69632);
