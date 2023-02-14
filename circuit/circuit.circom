@@ -187,7 +187,7 @@ template Aadhaar(N) {
         bitifier[i] = Num2Bits(8);
         bitifier[i].in <== base64_decoder.out[i];
         for (var j = 0; j < 8; j++) {
-            base64_decoded_bits[i * 8 + j] <== bitifier[i].out[j];
+            base64_decoded_bits[i * 8 + j] <== bitifier[i].out[7 - j];
         }
     }
 
