@@ -15,3 +15,4 @@ public.json
 node_scripts/*.xml
 experimentation_outputs/*
 aadhaar_files/
+circuit_cpp/

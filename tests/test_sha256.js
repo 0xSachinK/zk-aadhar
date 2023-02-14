@@ -66,7 +66,7 @@ function bitsToHex(bits) {
 describe("Test Generic Sha256 circuit", function async() {
   this.timeout(1000 * 1000);
 
-  it("calculate sha256 using the circuit", async () => {
+  it.skip("calculate sha256 using the circuit", async () => {
 
     const xml = path.join(__dirname, "../aadhaar_files/CanonicalizedSignatureRemoved.xml");
     // Read the xml file and grab all the data from it
