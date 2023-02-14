@@ -191,6 +191,14 @@ template Aadhaar(N) {
         }
     }
 
+    // Log the two values for debugging
+    for (var i = 0; i < 256; i++) {
+        log("sha256.out[" + i + "] = " + sha256.out[i]);
+    }
+    for (var i = 0; i < 256; i++) {
+        log("base64_decoded_bits[" + i + "] = " + base64_decoded_bits[i]);
+    }
+
     // Compare the two and ensure they are equal
     for (var i = 0; i < 256; i++) {
         sha256.out[i] === base64_decoded_bits[i];
